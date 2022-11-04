@@ -8,18 +8,121 @@ output:
 
 ## Loading and preprocessing the data
 
+For this assignment I would be using the following packages, dplyr and ggplot2
 
+```{r setup}
+knitr::opts_chunk$set(fig.path="figure/")
+library(dplyr)
+library(ggplot2)
+```
+
+First unzip the data and read the data from the csv into a data frame
+
+```{r readData}
+
+unzip("activity.zip")
+df <- read.csv("activity.csv")
+dim(df)
+head(df)
+```
+After examining the first few rows, we notice that there is a date column, but lets see if the date column is of type "Date, if not let's convert to "Date" type
+``` {r process_1}
+class(df$date)
+df$date <- as.Date(df$date, "%Y-%m-%d")
+class(df$date)
+```
+
+Now using dplyr let's group by date and find the mean number of steps taken in a day
+``` {r process_2}
+mean_by_day <- df %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE)) 
+summary(mean_by_day)
+
+median_by_day <- df %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE)) 
+summary(median_by_day)
+```
 
 ## What is mean total number of steps taken per day?
 
+Now we want to plot the above data as a histogram
 
+``` {r MeanStepsInDay}
+gg <- ggplot(mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day", x = "Mean step in a day", y = "binwidth = 10")
+plot(gg)
+```
+
+``` {r MedianStepsInDay}
+gg <- ggplot(median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day", x = "Median steps in a day", y = "binwidth = 10")
+plot(gg)
+```
 
 ## What is the average daily activity pattern?
 
+We can the same mean function as above instead of grouping by date, we can group by interval
+
+``` {r process_interval}
+mean_by_interval <- df %>% group_by(interval) %>% summarize(mean_steps = mean(steps, na.rm = TRUE))
+```
+
+To find the max we can display the max row using which.max 
+``` {r process_interval_max}
+max_row <- mean_by_interval[which.max(mean_by_interval$mean_steps),]
+max_row
+```
+
+We can use the plot function to plot the interval on x-axis and the mean steps in that interval on the y-axis
+
+``` {r MeanStepsByInterval}
+gg <- ggplot(mean_by_interval, aes(x = interval, y = mean_steps)) + geom_line() + labs(title = "Average steps taken during the 5 minute intervals", x = "5 minute window during the day", y = "Average steps during the 5 min interval")
+plot(gg)
+```
+
+This user had most number of steps at 8:35 and had more steps during that period in general compared to the rest of the day between 8:00 - 9:00 
 
 
 ## Imputing missing values
 
+``` {r missing_data}
+sum(is.na(df$steps))
+```
 
+There are a total of 2304 missing rows. One reason for missing values could be tracking steps while sleeping or if the subject didn't wear the tracking device during sleep. We will use the mean to impute missing values i.e. replace the missing values in the column with the mean of the column. 
+
+``` {r impute_missing}
+imputed <- df
+imputed$steps[is.na(imputed$steps)] <- mean(imputed$steps, na.rm = TRUE)
+head(imputed)
+```
+
+``` {r ImputedMeanStepsInDay}
+imputed_mean_by_day <- imputed %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE))
+gg <- ggplot(imputed_mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day (after imputing values)", x = "Average steps in a day", y = "binwidth = 10")
+plot(gg)
+```
+
+``` {r ImputedMedianStepsInDay}
+imputed_median_by_day <- imputed %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE))
+gg <- ggplot(imputed_median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day (after imputing values)", x = "Median steps in a day", y = "binwidth = 10")
+plot(gg)
+```
+
+Both the mean and the median steps increased after imputing values
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+``` {r weekday}
+imputed$week <- factor(ifelse(weekdays(imputed$date) %in% c("Saturday", "Sunday"), "weekend", "weekday"))
+head(imputed)
+imputed_mean_by_week <- imputed %>% group_by(week, interval) %>% summarize(mean_steps = mean(steps, na.rm = TRUE))
+head(imputed_mean_by_week)
+```
+
+Now let's plot the above imputed values and see if there is a difference between weekday and weekend activity
+
+```{r WeekdaysVsWeekends}
+gg <- ggplot(imputed_mean_by_week, aes(x = interval, y = mean_steps, fill = week)) + geom_line() + facet_grid(week~.) + labs(title = "Average steps taken on weekdays vs weekends", x = "5 minute interval during the day", y = "Average steps taken")
+plot(gg)
+```
+
+On weekdays there is maximum activity between 8:00 - 10:00, then there is very less activity after that fewer than 100 steps
+
+On weekends however there is moderate activity throughout the day between 50 -150 steps. 
