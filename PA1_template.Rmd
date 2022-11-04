@@ -34,25 +34,17 @@ class(df$date)
 
 Now using dplyr let's group by date and find the mean number of steps taken in a day
 ``` {r process_2}
-mean_by_day <- df %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE)) 
-summary(mean_by_day)
-
-median_by_day <- df %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE)) 
-summary(median_by_day)
+total_steps_by_day <- df %>% group_by(date) %>% summarize(total_steps = sum(steps, na.rm = TRUE)) 
 ```
 
 ## What is mean total number of steps taken per day?
 
 Now we want to plot the above data as a histogram
 
-``` {r MeanStepsInDay}
-gg <- ggplot(mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day", x = "Mean step in a day", y = "binwidth = 10")
+``` {r TotalStepsInDay}
+gg <- ggplot(total_steps_by_day, aes(x = total_steps)) + geom_histogram() + labs(title = "Histogram of total steps taken in a day", x = "Total steps in a day", y = "binwidth = 30")
 plot(gg)
-```
-
-``` {r MedianStepsInDay}
-gg <- ggplot(median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day", x = "Median steps in a day", y = "binwidth = 10")
-plot(gg)
+summary(total_steps_by_day)
 ```
 
 ## What is the average daily activity pattern?
@@ -93,17 +85,12 @@ imputed$steps[is.na(imputed$steps)] <- mean(imputed$steps, na.rm = TRUE)
 head(imputed)
 ```
 
-``` {r ImputedMeanStepsInDay}
-imputed_mean_by_day <- imputed %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE))
-gg <- ggplot(imputed_mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day (after imputing values)", x = "Average steps in a day", y = "binwidth = 10")
+``` {r ImputedTotalStepsInDay}
+imputed_total_by_day <- imputed %>% group_by(date) %>% summarize(total_steps = sum(steps, na.rm = TRUE))
+gg <- ggplot(imputed_total_by_day, aes(x = total_steps)) + geom_histogram() + labs(title = "Histogram of total steps taken in a day (after imputing values)", x = "Total steps in a day", y = "binwidth = 30")
 plot(gg)
 ```
 
-``` {r ImputedMedianStepsInDay}
-imputed_median_by_day <- imputed %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE))
-gg <- ggplot(imputed_median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day (after imputing values)", x = "Median steps in a day", y = "binwidth = 10")
-plot(gg)
-```
 
 Both the mean and the median steps increased after imputing values
 

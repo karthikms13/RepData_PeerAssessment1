@@ -85,35 +85,7 @@ class(df$date)
 Now using dplyr let's group by date and find the mean number of steps taken in a day
 
 ```r
-mean_by_day <- df %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE)) 
-summary(mean_by_day)
-```
-
-```
-##       date              mean_steps     
-##  Min.   :2012-10-01   Min.   : 0.1424  
-##  1st Qu.:2012-10-16   1st Qu.:30.6979  
-##  Median :2012-10-31   Median :37.3785  
-##  Mean   :2012-10-31   Mean   :37.3826  
-##  3rd Qu.:2012-11-15   3rd Qu.:46.1597  
-##  Max.   :2012-11-30   Max.   :73.5903  
-##                       NA's   :8
-```
-
-```r
-median_by_day <- df %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE)) 
-summary(median_by_day)
-```
-
-```
-##       date             median_steps
-##  Min.   :2012-10-01   Min.   :0    
-##  1st Qu.:2012-10-16   1st Qu.:0    
-##  Median :2012-10-31   Median :0    
-##  Mean   :2012-10-31   Mean   :0    
-##  3rd Qu.:2012-11-15   3rd Qu.:0    
-##  Max.   :2012-11-30   Max.   :0    
-##                       NA's   :8
+total_steps_by_day <- df %>% group_by(date) %>% summarize(total_steps = sum(steps, na.rm = TRUE)) 
 ```
 
 ## What is mean total number of steps taken per day?
@@ -122,27 +94,29 @@ Now we want to plot the above data as a histogram
 
 
 ```r
-gg <- ggplot(mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day", x = "Mean step in a day", y = "binwidth = 10")
+gg <- ggplot(total_steps_by_day, aes(x = total_steps)) + geom_histogram() + labs(title = "Histogram of total steps taken in a day", x = "Total steps in a day", y = "binwidth = 30")
 plot(gg)
 ```
 
 ```
-## Warning: Removed 8 rows containing non-finite values (stat_bin).
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](figure/MeanStepsInDay-1.png)<!-- -->
-
+![](figure/TotalStepsInDay-1.png)<!-- -->
 
 ```r
-gg <- ggplot(median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day", x = "Median steps in a day", y = "binwidth = 10")
-plot(gg)
+summary(total_steps_by_day)
 ```
 
 ```
-## Warning: Removed 8 rows containing non-finite values (stat_bin).
+##       date             total_steps   
+##  Min.   :2012-10-01   Min.   :    0  
+##  1st Qu.:2012-10-16   1st Qu.: 6778  
+##  Median :2012-10-31   Median :10395  
+##  Mean   :2012-10-31   Mean   : 9354  
+##  3rd Qu.:2012-11-15   3rd Qu.:12811  
+##  Max.   :2012-11-30   Max.   :21194
 ```
-
-![](figure/MedianStepsInDay-1.png)<!-- -->
 
 ## What is the average daily activity pattern?
 
@@ -212,21 +186,17 @@ head(imputed)
 
 
 ```r
-imputed_mean_by_day <- imputed %>% group_by(date) %>% summarize(mean_steps = mean(steps, na.rm = TRUE))
-gg <- ggplot(imputed_mean_by_day, aes(x = mean_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of mean steps taken in a day (after imputing values)", x = "Average steps in a day", y = "binwidth = 10")
+imputed_total_by_day <- imputed %>% group_by(date) %>% summarize(total_steps = sum(steps, na.rm = TRUE))
+gg <- ggplot(imputed_total_by_day, aes(x = total_steps)) + geom_histogram() + labs(title = "Histogram of total steps taken in a day (after imputing values)", x = "Total steps in a day", y = "binwidth = 30")
 plot(gg)
 ```
 
-![](figure/ImputedMeanStepsInDay-1.png)<!-- -->
-
-
-```r
-imputed_median_by_day <- imputed %>% group_by(date) %>% summarize(median_steps = median(steps, na.rm = TRUE))
-gg <- ggplot(imputed_median_by_day, aes(x = median_steps)) + geom_histogram(binwidth=10) + labs(title = "Histogram of median steps taken in a day (after imputing values)", x = "Median steps in a day", y = "binwidth = 10")
-plot(gg)
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](figure/ImputedMedianStepsInDay-1.png)<!-- -->
+![](figure/ImputedTotalStepsInDay-1.png)<!-- -->
+
 
 Both the mean and the median steps increased after imputing values
 
