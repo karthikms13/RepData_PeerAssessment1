@@ -197,8 +197,42 @@ plot(gg)
 
 ![](figure/ImputedTotalStepsInDay-1.png)<!-- -->
 
+```r
+summary(imputed_total_by_day)
+```
+
+```
+##       date             total_steps   
+##  Min.   :2012-10-01   Min.   :   41  
+##  1st Qu.:2012-10-16   1st Qu.: 9819  
+##  Median :2012-10-31   Median :10766  
+##  Mean   :2012-10-31   Mean   :10766  
+##  3rd Qu.:2012-11-15   3rd Qu.:12811  
+##  Max.   :2012-11-30   Max.   :21194
+```
+
 
 Both the mean and the median steps increased after imputing values
+
+```r
+meanDiff <- mean(imputed_total_by_day$total_steps) - mean(total_steps_by_day$total_steps) 
+
+medianDiff <- median(imputed_total_by_day$total_steps) - median(total_steps_by_day$total_steps) 
+
+meanDiff
+```
+
+```
+## [1] 1411.959
+```
+
+```r
+medianDiff
+```
+
+```
+## [1] 371.1887
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

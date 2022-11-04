@@ -89,10 +89,19 @@ head(imputed)
 imputed_total_by_day <- imputed %>% group_by(date) %>% summarize(total_steps = sum(steps, na.rm = TRUE))
 gg <- ggplot(imputed_total_by_day, aes(x = total_steps)) + geom_histogram() + labs(title = "Histogram of total steps taken in a day (after imputing values)", x = "Total steps in a day", y = "binwidth = 30")
 plot(gg)
+summary(imputed_total_by_day)
 ```
 
 
 Both the mean and the median steps increased after imputing values
+``` {r ImputedDiff} 
+meanDiff <- mean(imputed_total_by_day$total_steps) - mean(total_steps_by_day$total_steps) 
+
+medianDiff <- median(imputed_total_by_day$total_steps) - median(total_steps_by_day$total_steps) 
+
+meanDiff
+medianDiff
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
